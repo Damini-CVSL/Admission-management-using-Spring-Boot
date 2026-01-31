@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Approved Students</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Approved Students List</h2>
+
+<table>
+    <thead>
+    <tr>
+        <th>Student ID</th>
+        <th>Student Name</th>
+        <th>Age</th>
+        <th>Gender</th>
+        <th>Class</th>
+        <th>Section</th>
+        <th>Admission Number</th>
+        <th>Application Type</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="admission : ${approvedAdmissions}">
+        <td th:text="${admission.id}"></td>
+        <td th:text="${admission.studentName}"></td>
+        <td th:text="${admission.age}"></td>
+        <td th:text="${admission.gender}"></td>
+        <td th:text="${admission.className}"></td>
+        <td th:text="${admission.section}"></td>
+        <td th:text="${admission.admissionNumber}"></td>
+        <td th:text="${admission.offline ? 'Offline' : 'Online'}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<br>
+<a href="/admissions">⬅ Back to Dashboard</a>
+
+</body>
+</html>

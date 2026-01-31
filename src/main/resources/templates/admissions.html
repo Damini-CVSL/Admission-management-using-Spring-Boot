@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admissions</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+	<div th:if="${successMessage}" class="success-msg">
+    <p th:text="${successMessage}"></p>
+</div>
+
+<div th:if="${errorMessage}" class="error-msg">
+    <p th:text="${errorMessage}"></p>
+</div>
+	
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <h2>
+            Welcome, <span th:text="${username}"></span>
+            (<span th:text="${role}"></span>)
+        </h2>
+
+        <form th:action="@{/users/logout}" method="post">
+            <button class="logout-btn">Logout</button>
+        </form>
+    </div>
+
+    <!-- ADMIN BUTTON: View all approved students -->
+    <div th:if="${role == 'ADMIN'}" class="card">
+        <a href="/admissions/approved">
+            <button>View Approved Students</button>
+        </a>
+    </div>
+
+    <!-- NEW STUDENT ADMISSION FORM -->
+    <div class="card"
+         th:if="${role == 'STUDENT'} and ${admission == null}">
+        <h3>Apply for Admission</h3>
+        <form th:action="@{/admissions/online}" method="post" th:object="${admissionRequest}">
+            <input type="text" th:field="*{studentName}" placeholder="Student Name" required>
+            <input type="number" th:field="*{age}" placeholder="Age" required>
+            <select th:field="*{gender}" required>
+                <option value="" disabled selected>Select Gender</option>
+                <option value="MALE">Male</option>
+                <option value="FEMALE">Female</option>
+                <option value="OTHER">Other</option>
+            </select>
+            <input type="text" th:field="*{appliedClass}" placeholder="Applied Class" required>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <!-- EXISTING STUDENT STATUS -->
+    <div class="card"
+         th:if="${role == 'STUDENT'} and ${admission != null}">
+        <h3 th:text="'Admission ' + ${status}"></h3>
+        <p><b>Name:</b> <span th:text="${admission.studentName}"></span></p>
+        <p><b>Class:</b> <span th:text="${admission.appliedClass}"></span></p>
+        <p th:if="${admission.section != null}"><b>Section:</b> <span th:text="${admission.section}"></span></p>
+        <p th:if="${admission.admissionNumber != null}"><b>Admission No:</b> <span th:text="${admission.admissionNumber}"></span></p>
+    </div>
+
+    <!-- ADMIN PENDING ADMISSIONS TABLE -->
+    <div class="card" th:if="${role == 'ADMIN'}">
+        <h3>Pending Admissions</h3>
+
+        <!-- WHEN NO PENDING ADMISSIONS -->
+        <p th:if="${#lists.isEmpty(pendingAdmissions)}"
+           style="text-align:center; font-weight:600; color:#555;">
+            No more pending admissions 🎉
+        </p>
+
+        <!-- WHEN PENDING ADMISSIONS EXIST -->
+        <table th:if="${!#lists.isEmpty(pendingAdmissions)}">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Class</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="a : ${pendingAdmissions}">
+                <td th:text="${a.studentName}"></td>
+                <td th:text="${a.appliedClass}"></td>
+                <td>
+                    <form th:action="@{/admissions/{id}/approve(id=${a.id})}" method="post" style="display:inline">
+                        <button class="approve-btn">Approve</button>
+                    </form>
+
+                    <form th:action="@{/admissions/{id}/reject(id=${a.id})}" method="post" style="display:inline">
+                        <button class="reject-btn">Reject</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+</body>
+</html>
